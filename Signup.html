@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Funfu — Sign Up / Login</title>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+           GoogleAuthProvider, OAuthProvider, signInWithPopup } 
+           from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6xF5RTX6wy87TT17q61nUzoHI70JBkcA",
+    authDomain: "funfu-b4ad8.firebaseapp.com",
+    projectId: "funfu-b4ad8",
+    storageBucket: "funfu-b4ad8.appspot.com",
+    messagingSenderId: "400767863064",
+    appId: "1:400767863064:web:xxxxxxxxxxxxxxxxxxxxx",
+    measurementId: "G-XXXXXXXXXX"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const signupForm = document.getElementById('signup-form');
+  const loginForm = document.getElementById('login-form');
+  const googleBtn = document.getElementById('google-btn');
+  const appleBtn = document.getElementById('apple-btn');
+
+  const googleProvider = new GoogleAuthProvider();
+  const appleProvider = new OAuthProvider('apple.com');
+
+  // Signup
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = signupForm.email.value;
+    const password = signupForm.password.value;
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      signupForm.reset();
+      window.location.href = "docs.html";
+    } catch(err) {
+      alert(err.message);
+    }
+  });
+
+  // Login
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = loginForm.email.value;
+    const password = loginForm.password.value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      loginForm.reset();
+      window.location.href = "docs.html";
+    } catch(err) {
+      alert(err.message);
+    }
+  });
+
+  // Google login
+  googleBtn.addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      window.location.href = "docs.html";
+    } catch(err) {
+      alert(err.message);
+    }
+  });
+
+  // Apple login
+  appleBtn.addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, appleProvider);
+      window.location.href = "docs.html";
+    } catch(err) {
+      alert(err.message);
+    }
+  });
+</script>
+<style>
+body {font-family:Arial,sans-serif;margin:0;background:#f9f9f9;}
+main {max-width:400px;margin:50px auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+h2 {margin-top:0;color:#0a59a6;}
+form {display:flex;flex-direction:column;margin-bottom:20px;}
+input {margin:5px 0;padding:10px;font-size:14px;border:1px solid #ccc;border-radius:4px;}
+button {margin-top:10px;padding:10px;background:#0a59a6;color:white;border:none;border-radius:4px;cursor:pointer;}
+button:hover {background:#094a86;}
+.divider {text-align:center;margin:20px 0;font-size:14px;color:#666;}
+</style>
+</head>
+<body>
+<main>
+  <h2>Sign Up</h2>
+  <form id="signup-form">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <h2>Login</h2>
+  <form id="login-form">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <div class="divider">OR</div>
+  <button id="google-btn">Continue with Google</button>
+  <button id="apple-btn">Continue with Apple</button>
+</main>
+</body>
+</html>

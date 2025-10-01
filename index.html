@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Funfu</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // Funfu Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xF5RTX6wy87TT17q61nUzoHI70JBkcA",
+      authDomain: "funfu-b4ad8.firebaseapp.com",
+      projectId: "funfu-b4ad8",
+      storageBucket: "funfu-b4ad8.appspot.com",
+      messagingSenderId: "400767863064",
+      appId: "1:400767863064:web:xxxxxxxxxxxxxxxxxxxxx", // fill from Firebase console
+      measurementId: "G-XXXXXXXXXX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Redirect logic
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "docs.html"; // logged in → go to docs
+      } else {
+        window.location.href = "signup.html"; // not logged in → signup/login
+      }
+    });
+  </script>
+</head>
+<body>
+  <p>Checking login status...</p>
+</body>
+</html>

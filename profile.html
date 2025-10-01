@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>User Profile - Funfu</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // Funfu Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xF5RTX6wy87TT17q61nUzoHI70JBkcA",
+      authDomain: "funfu-b4ad8.firebaseapp.com",
+      projectId: "funfu-b4ad8",
+      storageBucket: "funfu-b4ad8.appspot.com",
+      messagingSenderId: "400767863064",
+      appId: "1:400767863064:web:xxxxxxxxxxxxxxxxxxxxx", // replace
+      measurementId: "G-XXXXXXXXXX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Wait for auth
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "signup.html";
+        return;
+      }
+
+      // Fill profile fields
+      document.getElementById("email").textContent = user.email || "";
+      document.getElementById("displayName").value = user.displayName || "";
+      document.getElementById("photoURL").value = user.photoURL || "";
+
+      // Update form
+      document.getElementById("profile-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+          await updateProfile(user, {
+            displayName: document.getElementById("displayName").value,
+            photoURL: document.getElementById("photoURL").value
+          });
+          alert("Profile updated!");
+          location.reload();
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <script type="module" src="navbar.js"></script>
+  <main style="padding:20px;">
+    <h2>Your Profile</h2>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <form id="profile-form">
+      <label>Display Name:<br>
+        <input type="text" id="displayName">
+      </label><br><br>
+      <label>Photo URL:<br>
+        <input type="url" id="photoURL">
+      </label><br><br>
+      <button type="submit">Update Profile</button>
+    </form>
+  </main>
+</body>
+</html>
