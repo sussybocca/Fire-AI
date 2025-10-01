@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Funfu Docs</title>
+<script type="module" src="navbar.js"></script>
+<script type="module">
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+// Example docs content
+const docs = [
+  {id:1, title:"Funfu Origins", content:"Funfu started as an experimental AI docs project."},
+  {id:2, title:"Digital Playground", content:"Funfu symbolizes creativity and collaboration through AI."},
+  {id:3, title:"Community Driven", content:"Funfu is an open hub to explore AI tools, docs, and sheets."}
+];
+
+onAuthStateChanged(getAuth(), user => {
+  if(!user) return; // navbar.js handles redirect
+
+  const listEl = document.getElementById('doc-list');
+  const contentEl = document.getElementById('doc-content');
+
+  function showDoc(doc) {
+    contentEl.innerHTML = `<h3>${doc.title}</h3><p>${doc.content}</p>`;
+  }
+
+  docs.forEach(doc => {
+    const item = document.createElement('div');
+    item.textContent = doc.title;
+    item.style.cursor = "pointer";
+    item.style.padding = "5px 0";
+    item.addEventListener('click', () => showDoc(doc));
+    listEl.appendChild(item);
+  });
+
+  // Show first doc by default
+  showDoc(docs[0]);
+});
+</script>
+<style>
+body {font-family:Arial,sans-serif;margin:0;background:#f9f9f9;}
+#app {display:flex;padding:20px;}
+#doc-list {width:250px;padding-right:20px;border-right:1px solid #ddd;}
+#doc-content {flex:1;padding-left:20px;}
+#doc-list div:hover {background:#eef;cursor:pointer;}
+</style>
+<body>
+<div id="app">
+  <div id="doc-list"></div>
+  <div id="doc-content"></div>
+</div>
+</body>
+</html>
