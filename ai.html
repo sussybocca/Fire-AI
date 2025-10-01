@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Funfu AI Chat</title>
-<script type="module" src="navbar.js"></script>
-<!-- Load Puter.ai -->
-<script src="https://js.puter.com/v2/"></script>
 <style>
 body {font-family:Arial,sans-serif;margin:0;background:#f9f9f9;}
 main {padding:20px;max-width:700px;margin:auto;}
@@ -19,6 +16,7 @@ p {margin:5px 0;}
 </style>
 </head>
 <body>
+
 <main>
   <h2>Funfu AI Chat</h2>
   <div id="chat-output"></div>
@@ -28,17 +26,28 @@ p {margin:5px 0;}
   </form>
 </main>
 
+<!-- Module script for navbar + Firebase auth -->
 <script type="module">
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// Firebase auth check
+// Redirect to signup if user is not logged in
 onAuthStateChanged(getAuth(), user => {
-  if(!user) {
-    window.location.href = "signup.html"; // redirect if not logged in
-    return;
+  if (!user) {
+    window.location.href = "signup.html";
   }
 });
+</script>
 
+<!-- Load Puter.ai -->
+<script src="https://js.puter.com/v2/"></script>
+
+<!-- Normal script for AI chat -->
+<script>
+const form = document.getElementById('chat-form');
+const input = document.getElementById('chat-input');
+const output = document.getElementById('chat-output');
+
+// Wait until Puter is loaded
 function waitForPuter(timeout = 5000) {
   return new Promise((resolve, reject) => {
     const start = Date.now();
@@ -54,24 +63,12 @@ function waitForPuter(timeout = 5000) {
   });
 }
 
-window.addEventListener('load', async function() {
-  const form = document.getElementById('chat-form');
-  const input = document.getElementById('chat-input');
-  const output = document.getElementById('chat-output');
-
-  try {
-    await waitForPuter();
-  } catch(err) {
-    output.innerHTML += `<p><b>AI:</b> ${err.message}</p>`;
-    return;
-  }
-
-  form.addEventListener('submit', async function(e) {
+waitForPuter().then(() => {
+  form.addEventListener('submit', async function(e){
     e.preventDefault();
     const question = input.value.trim();
     if(!question) return;
 
-    // Display user question
     output.innerHTML += `<p><b>You:</b> ${question}</p>`;
     input.value = "";
 
@@ -83,7 +80,10 @@ window.addEventListener('load', async function() {
       output.innerHTML += `<p><b>AI:</b> Error: ${err.message}</p>`;
     }
   });
+}).catch(err => {
+  output.innerHTML += `<p><b>AI:</b> ${err.message}</p>`;
 });
 </script>
+
 </body>
 </html>
