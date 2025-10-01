@@ -5,43 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Funfu AI Chat</title>
 <script type="module" src="navbar.js"></script>
-<!-- Load Puter.ai first -->
+<!-- Load Puter.ai -->
 <script src="https://js.puter.com/v2/"></script>
-<script type="module">
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-onAuthStateChanged(getAuth(), user => {
-  if(!user) return; // navbar.js handles redirect
-
-  const form = document.getElementById('chat-form');
-  const input = document.getElementById('chat-input');
-  const output = document.getElementById('chat-output');
-
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const question = input.value.trim();
-    if(!question) return;
-
-    // Display user question
-    output.innerHTML += `<p><b>You:</b> ${question}</p>`;
-    input.value = "";
-
-    // Make sure Puter is loaded
-    if(!window.puter) {
-      output.innerHTML += `<p><b>AI:</b> Puter.ai not loaded yet.</p>`;
-      return;
-    }
-
-    try {
-      const response = await window.puter.ai.chat(question, { model: "gpt-5-nano" });
-      output.innerHTML += `<p><b>AI:</b> ${response}</p>`;
-      output.scrollTop = output.scrollHeight;
-    } catch(err) {
-      output.innerHTML += `<p><b>AI:</b> Error: ${err.message}</p>`;
-    }
-  });
-});
-</script>
 <style>
 body {font-family:Arial,sans-serif;margin:0;background:#f9f9f9;}
 main {padding:20px;}
@@ -61,5 +26,36 @@ form {display:flex;gap:10px;}
     <button type="submit">Send</button>
   </form>
 </main>
+
+<!-- Puter.ai code must be in normal script, not module -->
+<script>
+window.addEventListener('load', function() {
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('chat-input');
+  const output = document.getElementById('chat-output');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+
+    output.innerHTML += `<p><b>You:</b> ${question}</p>`;
+    input.value = "";
+
+    if (!window.puter) {
+      output.innerHTML += `<p><b>AI:</b> Puter.ai not loaded yet.</p>`;
+      return;
+    }
+
+    try {
+      const response = await puter.ai.chat(question, { model: "gpt-5-nano" });
+      output.innerHTML += `<p><b>AI:</b> ${response}</p>`;
+      output.scrollTop = output.scrollHeight;
+    } catch(err) {
+      output.innerHTML += `<p><b>AI:</b> Error: ${err.message}</p>`;
+    }
+  });
+});
+</script>
 </body>
 </html>
