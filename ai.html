@@ -37,50 +37,51 @@ onAuthStateChanged(getAuth(), user => {
 });
 </script>
 
-<!-- Normal script for AI chat with dynamic Puter.ai loading -->
+<!-- Load Puter.ai -->
+<script src="https://js.puter.com/v2/"></script>
+
+<!-- Normal script for AI chat with fallback -->
 <script>
 const form = document.getElementById('chat-form');
 const input = document.getElementById('chat-input');
 const output = document.getElementById('chat-output');
 
-// Dynamically load Puter.ai
-function loadPuter() {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://js.puter.com/v2/';
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error('Failed to load Puter.ai'));
-    document.head.appendChild(s);
-  });
-}
+function initChat() {
+  // If puter exists, use normal chat
+  if (window.puter && puter.ai) {
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const question = input.value.trim();
+      if(!question) return;
 
-async function initChat() {
-  try {
-    await loadPuter(); // wait until script loads
-  } catch(err) {
-    output.innerHTML += `<p><b>AI:</b> ${err.message}</p>`;
-    return;
+      output.innerHTML += `<p><b>You:</b> ${question}</p>`;
+      input.value = "";
+
+      try {
+        const response = await puter.ai.chat(question, { model: "gpt-5-nano" });
+        output.innerHTML += `<p><b>AI:</b> ${response}</p>`;
+        output.scrollTop = output.scrollHeight;
+      } catch(err) {
+        output.innerHTML += `<p><b>AI:</b> Error: ${err.message}</p>`;
+      }
+    });
+  } else {
+    // Fallback: simple prompt example
+    const fallbackResponse = "What are the benefits of exercise?";
+    puter?.ai?.chat(fallbackResponse, { model: "gpt-5-nano" })
+      .then(r => {
+        output.innerHTML += `<p><b>AI:</b> ${r}</p>`;
+      })
+      .catch(() => {
+        output.innerHTML += `<p><b>AI:</b> Puter.ai not loaded — showing fallback text.</p>`;
+      });
   }
-
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const question = input.value.trim();
-    if(!question) return;
-
-    output.innerHTML += `<p><b>You:</b> ${question}</p>`;
-    input.value = "";
-
-    try {
-      const response = await puter.ai.chat(question, { model: "gpt-5-nano" });
-      output.innerHTML += `<p><b>AI:</b> ${response}</p>`;
-      output.scrollTop = output.scrollHeight;
-    } catch(err) {
-      output.innerHTML += `<p><b>AI:</b> Error: ${err.message}</p>`;
-    }
-  });
 }
 
-window.addEventListener('load', initChat);
+// Delay init to ensure script loaded
+window.addEventListener('load', () => {
+  setTimeout(initChat, 100); // small delay to let Puter script attach
+});
 </script>
 
 </body>
