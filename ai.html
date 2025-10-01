@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Funfu AI Chat</title>
 <script type="module" src="navbar.js"></script>
+<!-- Load Puter.ai first -->
 <script src="https://js.puter.com/v2/"></script>
 <script type="module">
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -21,13 +22,18 @@ onAuthStateChanged(getAuth(), user => {
     const question = input.value.trim();
     if(!question) return;
 
+    // Display user question
     output.innerHTML += `<p><b>You:</b> ${question}</p>`;
     input.value = "";
 
-    // Call Puter.ai GPT-5 Nano
+    // Make sure Puter is loaded
+    if(!window.puter) {
+      output.innerHTML += `<p><b>AI:</b> Puter.ai not loaded yet.</p>`;
+      return;
+    }
+
     try {
-      const response = await puter.ai.chat(question, { model: "gpt-5-nano" });
-      puter.print(response); // prints to console
+      const response = await window.puter.ai.chat(question, { model: "gpt-5-nano" });
       output.innerHTML += `<p><b>AI:</b> ${response}</p>`;
       output.scrollTop = output.scrollHeight;
     } catch(err) {
